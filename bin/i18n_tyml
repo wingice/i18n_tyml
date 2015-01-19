@@ -1,0 +1,74 @@
+#!/usr/bin/env ruby
+
+# USAGE: 
+#  Run and redirect output to a file for best results.
+#   example: ruby pull-defaults.rb > my-results.yml
+#  For now, you'll have to add the root en: element and increase
+#   the indent level for it to be a valid locale YML.
+#  Uncomment lines 160 and 161 (the ones that call 
+#   replace_content_of_file_with_i18n_queries) to have this
+#   script remove :default strings from i18n tags it finds.
+
+$LOAD_PATH.unshift(File.expand_path(File.dirname(__FILE__) + "/../lib"))
+
+
+require "yaml"
+require "optparse"
+require "forwardable"
+require 'active_support/all'
+require 'nokogiri'
+require 'i18n_tyml'
+require 'i18n_tyml/translation_manager'
+
+def parse_options(args)
+  options = {}
+  opts = OptionParser.new do |ops|
+    ops.on("-f", "--file FILE_OR_DIR",
+            "look for missing translations in files under FILE_OR_DIR",
+            "(if a file is given, only look in that file)") do |path|
+      options[:path] = path
+    end
+  end
+
+  opts.on_tail("-h", "--help", "Show this message") do
+    puts opts
+    exit
+  end
+
+  opts.on_tail("--version", "Show version") do
+    puts I18nTyml::VERSION
+    exit
+  end
+
+  opts.parse!(args)
+  options
+end
+
+translation_mgr = I18nTyml::TranslationManager.new(options[:path])
+missing_values = translation_mgr.search_missing.values
+
+#puts "VALUES: "+missing_values.inspect
+
+missing_message_strings = missing_values.map { |ms| 
+  ms.map { |mv|
+    #puts "STRINGS: "+mv.first.inspect+" - "+mv[1]
+    mr = mv.first.gsub(/\./, '^')
+    #mr.gsub(/./, '^')
+    unless(mv[1].nil?)
+      mr += "^"+mv[1]
+    end
+    mr = mr.split('^').reverse.inject {|a, n| {n => a}}
+    #mr = hashify([mv.first],mv[1]) 
+    #puts "STRINGShash: "+mr.inspect
+    mr
+  }
+}
+
+missing = missing_message_strings.each_with_object({}) do |h, all_message_strings|
+  #puts "HHH: "+h.inspect
+  h.each do |r|
+    all_message_strings.deep_safe_merge!(r)
+  end
+end
+
+puts missing.to_yaml
