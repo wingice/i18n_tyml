@@ -11,16 +11,13 @@ The idea and part code is borrowed from (http://willbradley.name/2013/03/21/rail
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'i18n_tyml'
+gem 'i18n_tyml', :github => 'wingice/i18n_tyml'
 ```
 
 And then execute:
 
     $ bundle
 
-Or install it yourself as:
-
-    $ gem install i18n_tyml
 
 ## Usage
 
