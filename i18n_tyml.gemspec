@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = I18nTyml::VERSION
   spec.authors       = ["William"]
   spec.email         = ["wingicelee@hotmail.com"]
-  spec.summary       = %q{Parse I18n.t function call, and output with yaml format.}
-  spec.description   = %q{Parse I18n.t function call, and output with yaml format..}
+  spec.summary       = %q{Parse I18n.t function call from view files, and output with yaml format.}
+  spec.description   = %q{Parse I18n.t function call from view files, and output with yaml format..}
   spec.homepage      = ""
   spec.license       = "MIT"
 
