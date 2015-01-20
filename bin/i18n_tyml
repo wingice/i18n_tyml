@@ -20,17 +20,13 @@ require 'nokogiri'
 require 'i18n_tyml'
 
 def parse_options(args)
-  args << "--version"  if args.empty?
+  args << "--help"  if args.empty?
   options = {}
-  options[:path] = args.first if args.length == 1
+  options[:path] = args[-1]
   
   opts = OptionParser.new do |ops|
-    ops.on("-f", "--file FILE_OR_DIR",
-            "look for missing translations in files under FILE_OR_DIR",
-            "(if a file is given, only look in that file)") do |path|
-      options[:path] = path
-    end
-    ops.on("-u", "--update", "Update the view file , remove the defaults part") do
+    ops.banner = "Usage: i18n_tyml [options] <path_or_file>, run in project home directory."
+    ops.on("-u", "--update", "Update the view files, remove the defaults part") do
       options[:remove_default] = true
     end
   end
