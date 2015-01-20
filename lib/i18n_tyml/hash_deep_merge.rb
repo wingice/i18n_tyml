@@ -1,8 +1,8 @@
 class Hash
   def has_nested_key?(key)
     h = self
-    key.to_s.split('^').each do |segment|
-      return false unless h.key?(segment)
+    key.to_s.split('.').each do |segment|
+      return false unless h.respond_to?(:key?) && h.key?(segment)
       h = h[segment]
     end
     true

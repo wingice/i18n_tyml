@@ -18,15 +18,20 @@ require "forwardable"
 require 'active_support/all'
 require 'nokogiri'
 require 'i18n_tyml'
-require 'i18n_tyml/translation_manager'
 
 def parse_options(args)
+  args << "--version"  if args.empty?
   options = {}
+  options[:path] = args.first if args.length == 1
+  
   opts = OptionParser.new do |ops|
     ops.on("-f", "--file FILE_OR_DIR",
             "look for missing translations in files under FILE_OR_DIR",
             "(if a file is given, only look in that file)") do |path|
       options[:path] = path
+    end
+    ops.on("-u", "--update", "Update the view file , remove the defaults part") do
+      options[:remove_default] = true
     end
   end
 
@@ -39,15 +44,13 @@ def parse_options(args)
     puts I18nTyml::VERSION
     exit
   end
-
+  
   opts.parse!(args)
   options
 end
 
-translation_mgr = I18nTyml::TranslationManager.new(options[:path])
-missing_values = translation_mgr.search_missing.values
-
-#puts "VALUES: "+missing_values.inspect
+translation_mgr = I18nTyml::TranslationManager.new(parse_options(ARGV))
+missing_values = translation_mgr.search_missing().values
 
 missing_message_strings = missing_values.map { |ms| 
   ms.map { |mv|
