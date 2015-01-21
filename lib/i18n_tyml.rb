@@ -53,9 +53,12 @@ module I18nTyml
     def target_files
       path = @dest_path
       path = path[0...-1] if path[-1..-1] == '/'
-      [path, Dir.glob("#{path}/**/*.erb"), Dir.glob("#{path}/**/*.rb") ].flatten
+      if File.directory?(path)
+        [Dir.glob("#{path}/**/*.erb"), Dir.glob("#{path}/**/*.rb") ].flatten
+      else
+        [path]
+      end
     end
-
 
     def read_content_of_file(file)
       File.read(File.expand_path(file))
